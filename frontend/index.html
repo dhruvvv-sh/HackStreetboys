@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>RippleGuard &mdash; Software Supply-Chain Risk Center</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/static/styles.css" />
+<script src="/static/vendor/vis-network.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">&#129419;</span>
+      <div>
+        <h1>RippleGuard</h1>
+        <p>Software Supply-Chain Risk Center &middot; PS-007</p>
+      </div>
+    </div>
+    <div class="tagline">Don&rsquo;t just find the vulnerability &mdash; understand the ripple.</div>
+  </header>
+
+  <section class="input-panel">
+    <div class="input-row">
+      <textarea id="reqInput" placeholder="Paste a requirements.txt here (e.g. flask==2.3.3)&#10;requests==2.31.0&#10;jinja2==3.1.2"></textarea>
+      <div class="input-actions">
+        <button id="analyzeBtn" class="btn primary">Analyze dependency chain</button>
+        <button id="sampleBtn" class="btn ghost">Load sample project</button>
+        <label class="depth-label">Transitive depth
+          <select id="depthSelect">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+          </select>
+        </label>
+        <span id="statusText" class="status"></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="dashboard" class="dashboard hidden">
+    <div class="stat-row">
+      <div class="stat-card risk">
+        <span class="stat-label">Overall Risk</span>
+        <span id="statOverall" class="stat-value">&mdash;</span>
+        <span class="stat-sub">/ 100</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Critical Dependencies</span>
+        <span id="statCritical" class="stat-value">&mdash;</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Vulnerable Packages</span>
+        <span id="statVulnerable" class="stat-value">&mdash;</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Potentially Affected Apps</span>
+        <span id="statApps" class="stat-value">&mdash;</span>
+        <span class="stat-sub demo-badge">demo data</span>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <div class="graph-panel">
+        <div class="panel-title">
+          Dependency &amp; Ecosystem Graph
+          <span class="legend">
+            <span class="dot pkg"></span> package
+            <span class="dot app"></span> application <span class="demo-badge">demo</span>
+            <span class="dot vuln"></span> vulnerable
+          </span>
+        </div>
+        <div id="network"></div>
+        <p class="hint">Click a package node to inspect it. Use &ldquo;Simulate Blast Radius&rdquo; to see what could be affected if it were compromised.</p>
+      </div>
+
+      <div class="side-panel">
+        <div id="detailCard" class="card">
+          <h3>Select a package</h3>
+          <p class="muted">Click any package node in the graph to see its risk breakdown and simulate a compromise.</p>
+        </div>
+
+        <div class="card">
+          <h3>Critical Dependencies</h3>
+          <div id="criticalList" class="list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card remediation-card">
+      <h3>Remediation Priority</h3>
+      <table id="remediationTable">
+        <thead>
+          <tr><th>#</th><th>Package</th><th>Risk</th><th>Why</th><th>Downstream</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="blastPanel" class="card blast-card hidden">
+      <h3 id="blastTitle">Blast Radius Simulation</h3>
+      <div id="blastBody"></div>
+    </div>
+  </section>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
