@@ -20,10 +20,10 @@ el("analyzeBtn").addEventListener("click", analyze);
 async function analyze() {
   const text = el("reqInput").value.trim();
   if (!text) {
-    el("statusText").textContent = "Paste a requirements.txt first.";
+    el("statusText").textContent = "Paste at least one package requirement to start.";
     return;
   }
-  el("statusText").textContent = "Walking PyPI + OSV.dev \u2026 this can take a few seconds.";
+  el("statusText").textContent = "Analyzing PyPI dependencies and OSV findings...";
   el("analyzeBtn").disabled = true;
   try {
     const resp = await fetch("/api/analyze", {
@@ -39,8 +39,8 @@ async function analyze() {
     currentData = data;
     render(data);
     el("statusText").textContent = data.unresolved.length
-      ? `Done. Could not resolve on PyPI: ${data.unresolved.join(", ")}`
-      : "Done.";
+      ? `Analysis complete. Unresolved on PyPI: ${data.unresolved.join(", ")}`
+      : "Analysis complete.";
   } catch (e) {
     el("statusText").textContent = "Request failed: " + e;
   } finally {
@@ -66,7 +66,7 @@ function render(data) {
   renderRemediation(data);
   el("blastPanel").classList.add("hidden");
   el("detailCard").innerHTML =
-    "<h3>Select a package</h3><p class='muted'>Click any package node in the graph to see its risk breakdown and simulate a compromise.</p>";
+    "<h3>Select a package</h3><p class='muted'>Click a package node to inspect its risk score, findings, and downstream exposure.</p>";
 }
 
 function renderGraph(data) {
@@ -132,20 +132,20 @@ function showDetail(pkgId, data) {
       )
       .join("");
   } else {
-    findingsHtml = "<p class='muted'>No known vulnerabilities found.</p>";
+    findingsHtml = "<p class='muted'>No known vulnerabilities were found for this package/version.</p>";
   }
 
   el("detailCard").innerHTML = `
     <h3>${pkgId} <span class="muted">v${risk.version || "?"}</span></h3>
-    <div class="detail-row"><span>Ecosystem Risk</span>${pill(risk.ecosystem_risk)}</div>
-    <div class="detail-row"><span>Severity component</span><span>${risk.severity_score}</span></div>
-    <div class="detail-row"><span>Structural component</span><span>${risk.structural_score}</span></div>
-    <div class="detail-row"><span>Downstream apps component</span><span>${risk.downstream_apps_score}</span></div>
-    <div class="detail-row"><span>Downstream packages</span><span>${risk.downstream_package_count}</span></div>
-    <div class="detail-row"><span>Downstream apps</span><span>${risk.downstream_app_count} <span class="demo-badge">demo</span></span></div>
+    <div class="detail-row"><span>Ecosystem risk</span>${pill(risk.ecosystem_risk)}</div>
+    <div class="detail-row"><span>Vulnerability severity</span><strong>${risk.severity_score}</strong></div>
+    <div class="detail-row"><span>Graph importance</span><strong>${risk.structural_score}</strong></div>
+    <div class="detail-row"><span>Application reach</span><strong>${risk.downstream_apps_score}</strong></div>
+    <div class="detail-row"><span>Downstream packages</span><strong>${risk.downstream_package_count}</strong></div>
+    <div class="detail-row"><span>Downstream apps</span><strong>${risk.downstream_app_count} <span class="demo-badge">demo</span></strong></div>
     ${risk.is_structural_single_point_of_failure ? "<div class='finding'>\u26A0 Structural single point of failure \u2014 many dependents, currently no known CVE.</div>" : ""}
     ${findingsHtml}
-    <button class="sim-btn" onclick="simulate('${pkgId}')">Simulate Blast Radius</button>
+    <button class="sim-btn" onclick="simulate('${pkgId}')">Simulate blast radius</button>
   `;
 }
 
@@ -200,8 +200,8 @@ function focusNode(id) {
 
 async function simulate(pkgId) {
   el("blastPanel").classList.remove("hidden");
-  el("blastTitle").textContent = `Blast Radius \u2014 if "${pkgId}" is compromised`;
-  el("blastBody").innerHTML = "<p class='muted'>Simulating\u2026</p>";
+  el("blastTitle").textContent = `Blast radius if "${pkgId}" is compromised`;
+  el("blastBody").innerHTML = "<p class='muted'>Running simulation...</p>";
   const resp = await fetch("/api/simulate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

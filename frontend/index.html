@@ -8,61 +8,80 @@
 <script src="/static/vendor/vis-network.min.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark">&#129419;</span>
-      <div>
-        <h1>RippleGuard</h1>
-        <p>Software Supply-Chain Risk Center &middot; PS-007</p>
+  <main class="page-shell">
+    <header class="hero">
+      <div class="brand">
+        <span class="brand-mark">RG</span>
+        <div>
+          <h1>RippleGuard</h1>
+          <p>Software supply-chain risk center</p>
+        </div>
       </div>
-    </div>
-    <div class="tagline">Don&rsquo;t just find the vulnerability &mdash; understand the ripple.</div>
-  </header>
+      <div class="hero-copy">
+        <span class="eyebrow">PS-007 Prototype</span>
+        <h2>Understand dependency risk before it spreads.</h2>
+        <p>Paste a Python requirements file, map the transitive graph, then prioritize remediation by ecosystem impact.</p>
+      </div>
+    </header>
 
-  <section class="input-panel">
-    <div class="input-row">
-      <textarea id="reqInput" placeholder="Paste a requirements.txt here (e.g. flask==2.3.3)&#10;requests==2.31.0&#10;jinja2==3.1.2"></textarea>
-      <div class="input-actions">
-        <button id="analyzeBtn" class="btn primary">Analyze dependency chain</button>
-        <button id="sampleBtn" class="btn ghost">Load sample project</button>
+    <section class="input-panel">
+      <div class="panel-heading">
+        <div>
+          <span class="section-kicker">Analyze</span>
+          <h2>Project dependencies</h2>
+        </div>
         <label class="depth-label">Transitive depth
           <select id="depthSelect">
-            <option value="1">1</option>
-            <option value="2" selected>2</option>
-            <option value="3">3</option>
+            <option value="1">1 hop</option>
+            <option value="2" selected>2 hops</option>
+            <option value="3">3 hops</option>
           </select>
         </label>
-        <span id="statusText" class="status"></span>
       </div>
-    </div>
-  </section>
+      <textarea id="reqInput" placeholder="flask==2.3.3&#10;requests==2.31.0&#10;jinja2==3.1.2"></textarea>
+      <div class="input-footer">
+        <div class="input-actions">
+          <button id="analyzeBtn" class="btn primary">Analyze chain</button>
+          <button id="sampleBtn" class="btn secondary">Load sample</button>
+        </div>
+        <span id="statusText" class="status">Ready for a requirements.txt file.</span>
+      </div>
+    </section>
 
-  <section id="dashboard" class="dashboard hidden">
-    <div class="stat-row">
-      <div class="stat-card risk">
-        <span class="stat-label">Overall Risk</span>
+    <section id="dashboard" class="dashboard hidden">
+      <div class="dashboard-heading">
+        <div>
+          <span class="section-kicker">Results</span>
+          <h2>Risk overview</h2>
+        </div>
+        <span class="data-note">Application impact uses demo ecosystem data.</span>
+      </div>
+
+      <div class="stat-row">
+      <div class="stat-card risk" data-tone="risk">
+        <span class="stat-label">Overall risk</span>
         <span id="statOverall" class="stat-value">&mdash;</span>
         <span class="stat-sub">/ 100</span>
       </div>
       <div class="stat-card">
-        <span class="stat-label">Critical Dependencies</span>
+        <span class="stat-label">Critical dependencies</span>
         <span id="statCritical" class="stat-value">&mdash;</span>
       </div>
       <div class="stat-card">
-        <span class="stat-label">Vulnerable Packages</span>
+        <span class="stat-label">Vulnerable packages</span>
         <span id="statVulnerable" class="stat-value">&mdash;</span>
       </div>
       <div class="stat-card">
-        <span class="stat-label">Potentially Affected Apps</span>
+        <span class="stat-label">Affected apps</span>
         <span id="statApps" class="stat-value">&mdash;</span>
-        <span class="stat-sub demo-badge">demo data</span>
+        <span class="stat-sub">demo data</span>
       </div>
     </div>
 
     <div class="main-grid">
       <div class="graph-panel">
         <div class="panel-title">
-          Dependency &amp; Ecosystem Graph
+          <span>Dependency graph</span>
           <span class="legend">
             <span class="dot pkg"></span> package
             <span class="dot app"></span> application <span class="demo-badge">demo</span>
@@ -76,7 +95,7 @@
       <div class="side-panel">
         <div id="detailCard" class="card">
           <h3>Select a package</h3>
-          <p class="muted">Click any package node in the graph to see its risk breakdown and simulate a compromise.</p>
+          <p class="muted">Click a package node to inspect its score, findings, and downstream exposure.</p>
         </div>
 
         <div class="card">
@@ -100,7 +119,8 @@
       <h3 id="blastTitle">Blast Radius Simulation</h3>
       <div id="blastBody"></div>
     </div>
-  </section>
+    </section>
+  </main>
 
   <script src="/static/app.js"></script>
 </body>
